@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<context:annotation-config></context:annotation-config>
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="nguyenlcpd01618@fpt.edu.vn" />
+		<property name="password" value="chiviemqu@" />
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="viewResolver" p:prefix="/WEB-INF/view/" p:suffix=".jsp"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"></bean>
+
+	<context:component-scan base-package="controller"></context:component-scan>
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="basename" value="classpath:messages"></property>
+	</bean>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="vi"></property>
+	</bean>
+
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor"
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="lang"></property>
+		</bean>
+	</mvc:interceptors>
+
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/login.io" />
+			<mvc:exclude-mapping path="/user-login.io" />
+			<mvc:exclude-mapping path="/admin/**" />
+			<bean class="bean.FireWall"></bean>
+		</mvc:interceptor>
+
+		<mvc:interceptor>		
+			<mvc:mapping path="/admin/**" />
+			<mvc:exclude-mapping path="/admin/login.io" />
+			<mvc:exclude-mapping path="/admin/admin-login.io" />
+			<bean class="bean.AdminFireWall"></bean>
+		</mvc:interceptor>
+
+
+	</mvc:interceptors>
+</beans>
